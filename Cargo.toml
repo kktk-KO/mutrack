@@ -1,0 +1,21 @@
+[package]
+name = "mutrack"
+version = "0.1.0"
+edition = "2018"
+autobins = false
+
+[[bin]]
+name = "mutrack"
+path = "src/main.rs"
+
+[lib]
+name = "mutrack_inject"
+crate-type = ["cdylib"]
+path = "src/inject.rs"
+
+[dependencies]
+libloading = "0.6.2"
+thread_local = "1.0.1"
+lazy_static = "1.4.0"
+scopeguard = "1.1.0"
+nix = "0.17.0"
