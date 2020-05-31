@@ -6,7 +6,7 @@ thread_local! {
     static IS_ACTIVE: Cell<bool> = Cell::new(false);
 }
 
-pub fn try_activate<T, F, E, R>(t: T, f: F, e: E) -> R
+pub fn recursion_guard<T, F, E, R>(t: T, f: F, e: E) -> R
     where F: FnOnce(T) -> R,
           E: FnOnce(T) -> R,
 {
@@ -19,10 +19,4 @@ pub fn try_activate<T, F, E, R>(t: T, f: F, e: E) -> R
             e(t)
         }
     })
-}
-
-pub fn activate() {
-    IS_ACTIVE.with(|is_active| {
-        is_active.set(true);
-    });
 }

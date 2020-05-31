@@ -1,4 +1,4 @@
-mod activate;
+mod recursion_guard;
 mod pthread;
 mod recorder;
 mod debug;
@@ -9,7 +9,7 @@ use std::os::raw::c_int;
 use std::time::Instant;
 use nix::unistd::gettid;
 use scopeguard::defer;
-use crate::activate::try_activate;
+use crate::recursion_guard::recursion_guard;
 use crate::pthread::orig_pthread_mutex_lock;
 use crate::pthread::orig_pthread_mutex_unlock;
 use crate::recorder::ensure_recorder;
@@ -19,7 +19,7 @@ use crate::message::MessageType;
 
 #[no_mangle]
 pub extern fn pthread_mutex_lock(mutex: *const c_void) -> c_int {
-    try_activate(
+    recursion_guard(
         mutex,
         |mutex|{
             ensure_recorder();
@@ -45,7 +45,7 @@ pub extern fn pthread_mutex_lock(mutex: *const c_void) -> c_int {
 
 #[no_mangle]
 pub extern fn pthread_mutex_unlock(mutex: *const c_void) -> c_int {
-    try_activate(
+    recursion_guard(
         mutex,
         |mutex|{
             ensure_recorder();
